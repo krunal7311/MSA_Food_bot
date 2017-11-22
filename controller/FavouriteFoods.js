@@ -4,6 +4,10 @@ exports.displayFavouriteFood = function getFavouriteFood(session, username){
     var url = 'http://foodbot7311.azurewebsites.net/tables/foodtable';
     rest.getFavouriteFood(url, session, username, handleFavouriteFoodResponse)
 };
+exports.sendFavouriteFood = function postFavouriteFood(session, username, favouritefood){
+    var url = 'http://foodbot7311.azurewebsites.net/tables/foodtable';
+    rest.postFavouriteFood(url, username, favouritefood);
+};
 
 
 function handleFavouriteFoodResponse(message, session, username) {
@@ -29,3 +33,34 @@ function handleFavouriteFoodResponse(message, session, username) {
     session.send("%s, your favourite foods are: %s", username, allFoods);                
     
 }
+
+
+exports.deleteFavouriteFood = function deleteFavouriteFood(session,username,favouritefood){
+    var url  = 'http://foodbot7311.azurewebsites.net/tables/foodtable';
+
+
+    rest.getFavouriteFood(url,session, username,function(message,session,username){
+     var   allFoods = JSON.parse(message);
+
+        for(var i in allFoods) {
+
+            if (allFoods[i].favouritefood === favouritefood && allFoods[i].username === username) {
+
+                console.log(allFoods[i]);
+
+                rest.deleteFavouriteFood(url,session,username,favouritefood, allFoods[i].id ,handleDeletedFoodResponse)
+
+            }
+        }
+
+
+    });
+
+
+};
+
+function handleDeletedFoodResponse(body,session,username, favouritefood){
+    console.log('Done');
+}
+
+
