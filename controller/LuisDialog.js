@@ -1,5 +1,5 @@
 var builder = require('botbuilder');
-
+var restaurant = require('./RestaurantCard');
 var food=require("./FavouriteFoods");
 // Some sections have been omitted
 
@@ -18,13 +18,9 @@ exports.startDialog = function (bot) {
         matches: 'GetCalories'
     });
 
-    bot.dialog('WantFood', function (session, args) {
-        
-                 session.send("Want Food intent found");
-             
-     }).triggerAction({
-         matches: 'WantFood'
-     });
+
+
+
 
      bot.dialog('GetFavouriteFood', [
         function (session, args, next) {
@@ -121,5 +117,28 @@ exports.startDialog = function (bot) {
     }]).triggerAction({
         matches: 'DeleteFavourite'
     });
+
+    bot.dialog('WantFood', function (session, args) {
+        
+             
+                    // Pulls out the food entity from the session if it exists
+                    var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
+        
+                    // Checks if the for entity was found
+                    if (foodEntity) {
+                        session.send('Looking for restaurants which sell %s...', foodEntity.entity);
+                        restaurant.displayRestaurantCards(foodEntity.entity, "auckland", session);
+                    } else {
+                        session.send("No food identified! Please try again");
+                    }
+                
+        
+            }).triggerAction({
+                matches: 'WantFood'
+            });
+
+
+
+
      
 }
